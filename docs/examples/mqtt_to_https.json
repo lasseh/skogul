@@ -1,0 +1,38 @@
+{
+  "receivers": {
+    "my_mqtt": {
+      "type": "mqtt",
+      "handler": "json",
+      "username": "username",
+      "password": "password",
+      "broker": "hostname:port",
+      "topics": ["mytopic"]
+    }
+  },
+  "handlers": {
+    "json": {
+      "parser": "json",
+      "transformers": [],
+      "sender": "batch"
+    }
+  },
+  "senders": {
+    "batch": {
+      "type": "batch",
+      "threshold": 1000,
+      "interval": "5s",
+      "next": "backoff"
+    },
+    "backoff": {
+      "type": "backoff",
+      "next": "http",
+      "base": "1s",
+      "retries": 10
+    },
+    "http": {
+      "type": "http",
+      "insecure": true,
+      "URL": "https://me:hunter2@[::1]:8080/"
+    }
+  }
+}

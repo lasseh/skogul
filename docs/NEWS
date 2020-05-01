@@ -1,0 +1,169 @@
+v0.6.2
+======
+
+Release date: 2020-04-03
+
+Fixes a bug introduced in the influx-sender in v0.6.1 which would send any integers
+as quoted string values, as in `key="123i"` instead of the expected `key=123i`.
+Fixes a bug in the influx-receiver which would skip the final byte in a float
+when parsing it.
+
+v0.6.1
+======
+
+Release date: 2020-04-03
+
+Fixes a bug in the influx-sender which didn't send integers to influx as <int>i,
+which is what InfluxDB expects. Since this is a breaking change and requires the
+measurement fields to be dropped/updated/altered, there's a feature flag added:
+"ConvertIntToFloat". Enabling this will convert ALL numbers sent through that
+sender to FLOATS. Don't do this unless you know you need this. The default value
+is OFF.
+
+v0.6.0
+======
+
+Release date: 2020-04-02
+
+Introduces a parses for the InfluxDB line protocol. The parser is to be considered
+in beta/testing. Activate it by configuring a handler with the "influx" parser.
+
+v0.5.5
+======
+
+Release date: 2020-03-03
+
+Fixes a bug with the build pipeline which would reuse a previously generated
+skogul binary when archiving releases. The binary in question did not contain
+the build flag for setting version number, so now we clean the directory before
+building a release to make sure to rebuild it with the proper flags.
+
+v0.5.4
+======
+
+Release date: 2020-03-03
+
+Fixes a bug where a previous bugfix for generating builds with version numbers
+wasn't in master and therefore wasn't present for future builds.
+
+v0.5.3
+======
+
+Release date: 2020-03-03
+
+Fixes a bug with -version which wouldn't work for prebuilt binaries/packages.
+
+v0.5.2
+======
+
+Release date: 2020-03-02
+
+Fixes a bug with the install RPMs which would error during install
+and uninstall. The RPMs are now built on a system running yum, which
+will make sure build dependencies are correctly satisfied. Also reworks the
+build system using Make, and introduces a -version flag.
+
+Refactors the internal Handler API to expose Parse, Transform and Send
+(also TransformAndSend which transforms a container and then sends it,
+and Handle which parses, transforms and sends a container). This should
+make the API easier to understand and makes sure relevant procedures (
+like Validate()) are run before e.g. Send()-ing things off.
+
+Specific changes:
+
+- Fixes a bug with the RPM building which would make it error
+  during install and uninstall (reinstall). The package gets
+  installed correctly, but not uninstalled. This bug has to be
+  manually worked a round if any previous skogul RPM is
+  installed, by manually uninstalling the version using rpm.
+  (rpm -e --noscripts skogul*)
+- Inverts the influxdb-sender field validation to white-list instead of
+  black-list data types, which should fix #119.
+
+v0.5.1
+======
+
+Release date: 2020-01-30
+
+Add custom flattening separator, and a magic 'drop' separator to
+remove any intermediate keys. Also adds some benchmarks for custom
+parsers as well as cleaning up some package names for test files.
+
+Specific changes:
+
+- Support for custom flattening separator as well as dropping intermediate keys.
+
+v0.5.0
+======
+
+Release date: 2020-01-22
+
+Skogul 0.5.0 is a small release, but should make life much easier for
+InfluxDB-users.
+
+Specific changes:
+
+- InfluxDB sender now detects invalid metrics instead of sending "garbage"
+  to InfluxDB that fails - it will send what it can.
+- InfluxDB sender has much better logging
+- Split transformer now correctly transforms remainder of metrics in a
+  container after encountering one it can't handle.
+- RPM packages and systemd unit files now agree upon default config file
+  path.
+
+v0.4.1
+======
+
+Release date: 2020-01-06
+
+Skogul 0.4.1 brings support for exposing MQTT topics in the metadata. Yup, that's it.
+
+v0.4.0
+======
+
+Release date: 2019-12-04
+
+Skogul 0.4.0 brings MQTT configuration up to speed with other receivers and senders.
+A new transformer to set the timestamp is introduced, as well as a custom JSON parser
+for use where the incoming JSON format does not conform to the one of Skogul.
+Furthermore, new versions now ship with prebuilt RPMs as well as prebuilt archives.
+We also run automated tests on all example configuration in ./docs/examples!
+
+Specific changes:
+
+- JSON syntax errors offsets correctly with tabs
+- Support building RPMs and build RPMs for new releases
+- Bring MQTT configuration up to speed (configuration updates required!)
+- MQTT wildcard support (+ and #)
+- A custom JSON parser, for use when the JSON is not already on Skogul format
+- Timestamp transformer, used to set the timestamp of a metric from data
+
+v0.3.0
+======
+
+Release date: 2019-11-18
+
+Skogul 0.3.0 contains several changes aimed at project management, some to
+improve core functionality, and some module improvements. It's not a huge
+change since 0.2.0, and that's how we like it. As per usual, we aim for
+high quality releases.
+
+Specific changes:
+
+- Use of CI and automated building of release tar-balls
+- Cleanup and refresh of documentation
+- There's now a single unified way of handling modules that dramatically
+  reduces code duplication in core.
+- Modules can now provide documentation for nested data structures, which
+  is correctly exposed in manual pages.
+- A conditional transformer (#71) was added that provides a mechanism to
+  only execute a transformer if certain conditions are present.
+- The "extract" feature of the metadata transformer no longer creates empty
+  metadata keys, and will remove the original to avoid duplicating
+  information.
+- The logrus receiver replaces the log-receiver, allowing better control of
+  log data. More work in this area is to be expected.
+- The HTTP receiver can now apply different authorization rules for
+  different paths.
+
+The latter constitutes a bit of a change in configuration.

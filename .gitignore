@@ -1,3 +1,28 @@
-/pkg/cmd/skogul/skogul
-/pkg/cmd/tester/tester
+cmd/skogul/skogul
 /skogul
+/skogul.1
+/docs/skogul.rst
+
+# for release-mechanics
+/*.tar.bz2
+/dist
+/rpm-prep
+/build/redhat-skogul.spec
+*.rpm
+
+# Don't check vendored files in
+vendor
+
+# Editor tmp files
+.vscode
+.*swp
+
+# MacOS temp file
+.DS_Store
+
+# Ignore testfiles
+*.test
+
+# Ignore typical profiling and coverage artefacts
+*.prof
+coverage.out
